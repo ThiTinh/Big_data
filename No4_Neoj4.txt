@@ -1,0 +1,79 @@
+// loading process
+LOAD CSV FROM "file:///chat-data/chat_join_team_chat.csv" AS row
+MERGE (u:User {id: toInteger(row[0])})
+MERGE (c:TeamChatSession {id: toInteger(row[1])})
+MERGE (u)-[:Joins{timeStamp: row[2]}]->(c)
+RETURN u, c
+;
+LOAD CSV FROM "file:///chat-data/chat_leave_team_chat.csv" AS row
+MERGE (u: User {id: toInteger(row[0])})
+MERGE (c: TeamChatSession {id: toInteger(row[1])})
+MERGE (u)-[:Leaves{timeStamp: row[2]}]->(c)
+RETURN u, c
+;
+LOAD CSV FROM "file:///chat-data/chat_mention_team_chat.csv" AS row
+MERGE (i: ChatItem {id: toInteger(row[0])})
+MERGE (u: User {id: toInteger(row[1])})
+MERGE (i)-[:Mentioned{timeStamp: row[2]}]->(u)
+RETURN i, u
+;
+LOAD CSV FROM "file:///chat-data/chat_respond_team_chat.csv" AS row
+MERGE (ione:ChatItem {id: toInteger(row[0])})
+MERGE (itwo:ChatItem {id: toInteger(row[1])})
+MERGE (ione)-[:ResponseTo{timeStamp: row[2]}]->(itwo)
+RETURN ione, itwo
+;
+# ========
+
+LOAD CSV FROM "file:///chat-data/chat_create_team_chat.csv" AS row
+MERGE (u: User {id: toInteger(row[0])}) MERGE (t: Team {id: toInteger(row[1])})
+MERGE (c: TeamChatSession {id: toInteger(row[2])})
+MERGE (u)-[:CreatesSession{timeStamp: row[3]}]->(c)
+MERGE (c)-[:OwnedBy{timeStamp: row[3]}]->(t)
+RETURN u,c
+;
+
+LOAD CSV FROM "file:///chat-data/chat_item_team_chat.csv" AS row
+MERGE (u: User {id: toInteger(row[0])})
+MERGE (c: TeamChatSession {id: toInteger(row[1])})
+MERGE (i: ChatItem {id: toInteger(row[2])})
+MERGE (u)-[:CreateChat{timeStamp: row[3]}]->(i)
+MERGE (i)-[:PartOf{timeStamp: row[3]}]->(c)
+return u,c,i
+;
+
+// ======
+
+// Longest conversation
+match p = (i1)-[:ResponseTo*]->(i2)
+return p
+order by length(p) desc limit 1
+
+
+// The most active team
+MATCH (c:TeamChatSession)<-[:Joins]-(u:User)
+WITH c, COUNT(*) AS joinCount, COLLECT(u) AS members
+ORDER BY joinCount DESC
+LIMIT 1
+RETURN c, joinCount, members;
+
+
+// top 5 chattiest users
+MATCH (u:User)
+OPTIONAL MATCH (u)-[:Joins]->(:TeamChatSession)
+WITH u, COUNT(*) AS chatCount
+RETURN u.id, chatCount
+ORDER BY chatCount DESC
+LIMIT 5;
+
+# ====
+# C2
+// chattiest users
+match (u)-[:CreateChat*]->(i)
+return u.id, count(i)
+order by count(i) desc limit 10
+
+// chattiest teams
+match (i)-[:PartOf*]->(c)-[:OwnedBy*]->(t)
+return t.id, count(c)
+order by count(c) desc limit 10
