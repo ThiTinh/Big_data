@@ -13,11 +13,8 @@ No4_ML_Py_SVM.ipynb - Building and Evaluating SVM Models in Python
 No4_Neoj4.txt - Code for Graph Analysis in Neo4j
 
 ---
-In this project:
 
-- Build a big data ecosystem using the tools and methods that discussed during the module;
-to do this we will analyse a data set simulating big data generated from a large number of users 
-who are playing an imaginary game called "Catch the Pink Flamingo".
+This project constructs a big data ecosystem by employing data exploration, machine learning techniques with big data, and graph analysis. The dataset simulates big data generated from a large number of users who are playing an imaginary game called "Catch the Pink Flamingo".
 
 Needs to achieve the following:
 
