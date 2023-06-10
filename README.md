@@ -16,7 +16,6 @@ No4_Neoj4.txt - Code for Graph Analysis in Neo4j
 
 This project constructs a big data ecosystem by employing data exploration, machine learning techniques with big data, and graph analysis. The dataset simulates big data generated from a large number of users who are playing an imaginary game called "Catch the Pink Flamingo".
 
-Needs to achieve the following:
 
 - Critically evaluate the three big data processing paradigms as discussed during the course.
 
